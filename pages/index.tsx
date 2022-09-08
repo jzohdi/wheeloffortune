@@ -166,7 +166,7 @@ const Home: NextPage = () => {
     }, 6000);
   };
 
-  useRAFLoop(() => {
+  const doAnimation = useCallback(() => {
     const degreesLeft = degreesToSpinRef.current;
     const isSpinning = degreesLeft > 0;
     // console.log({ isSpinning, toSping: degreesToSpinRef.current });
@@ -203,6 +203,15 @@ const Home: NextPage = () => {
           doConfetti();
         }, 300);
       }
+    }
+  }, [spinConfig, modalData]);
+
+  useRAFLoop(() => {
+    const degreesLeft = degreesToSpinRef.current;
+    const isSpinning = degreesLeft > 0;
+    // console.log({ isSpinning, toSping: degreesToSpinRef.current });
+    if (isSpinning) {
+      doAnimation();
     }
   });
   /*
