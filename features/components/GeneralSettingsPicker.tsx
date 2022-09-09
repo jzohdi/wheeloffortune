@@ -1,4 +1,4 @@
-import { FileInput, Switch, TextInput } from "@mantine/core";
+import { FileInput, NumberInput, Switch, TextInput } from "@mantine/core";
 import { useState } from "react";
 import Spacer from "./Spacer";
 
@@ -15,6 +15,8 @@ interface GeneralSettingsPickerProps {
   onChangeModalSecondaryText: (val: string) => void;
   modalButtonText: string;
   onChangeModalButtonText: (val: string) => void;
+  wheelSpeedScale: number;
+  onChangeWheelSpeedScale: (num: number) => void;
 }
 
 const spacerHeight = 10;
@@ -32,6 +34,8 @@ export default function GeneralSettingsPicker({
   onChangeModalTitle,
   modalSecondaryText,
   onChangeModalSecondaryText,
+  wheelSpeedScale,
+  onChangeWheelSpeedScale,
 }: GeneralSettingsPickerProps) {
   // const [internalBackgroundImage, setInternalBackgroundImage] =
   //   useState<File | null>(null);
@@ -100,6 +104,17 @@ export default function GeneralSettingsPicker({
         label="Modal Button Text"
         value={modalButtonText}
         onChange={(e) => onChangeModalButtonText(e.currentTarget.value)}
+      />
+      <Spacer height={spacerHeight} />
+      <NumberInput
+        label="Wheel Speed Scale"
+        step={0.01}
+        value={wheelSpeedScale}
+        precision={2}
+        onChange={onChangeWheelSpeedScale}
+        min={0}
+        {...{ stepHoldDelay: 500, stepHoldInterval: 100 }}
+        description="Larger value will stop wheel faster"
       />
     </div>
   );

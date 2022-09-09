@@ -219,14 +219,8 @@ const Home: NextPage = () => {
       if (!container) {
         return;
       }
-      let spinDelta = Math.max(degreesLeft * 0.02, 0.25);
-      if (spinDelta === 0.2) {
-        // console.log("0.2");
-      }
-      // degreesLeft > 50
-      // ? // spinConfig.spinSpeed * Math.max(Math.min(degreesLeft / 15, 20), 0.15);
-      //   Math.max(Math.log2(degreesLeft), 0.15)
-      // : Math.max(Math.min(degreesLeft / 10, 20), 0.15);
+      let spinDelta = Math.max(degreesLeft * 0.02 * spinConfig.spinSpeed, 0.25);
+
       const currentDegree = currentRotation.current;
       let targetDegree = currentDegree + spinDelta;
       const numberElements = activeEles.length;
@@ -262,7 +256,7 @@ const Home: NextPage = () => {
         }, 300);
       }
     }
-  }, [spinConfig, modalData, activeEles]);
+  }, [spinConfig, modalData, activeEles, shouldPlayPrizeAudio]);
 
   useRAFLoop(() => {
     const degreesLeft = degreesToSpinRef.current;
@@ -387,7 +381,11 @@ const Home: NextPage = () => {
         }}
         ref={canvasRef}
       ></canvas>
-      <Modal opened={currPrize !== null} onClose={() => setCurrPrize(null)}>
+      <Modal
+        opened={currPrize !== null}
+        onClose={() => setCurrPrize(null)}
+        centered
+      >
         <div>
           <Title order={2}>{modalTitle}</Title>
           {modalSecondaryText && <p>{modalSecondaryText}</p>}
@@ -477,6 +475,7 @@ const Home: NextPage = () => {
                             onChange={(e) =>
                               handleChangeText(ele, e.currentTarget.value)
                             }
+                            placeholder="Main Text"
                           />
                           <TextInput
                             value={ele.secondaryText}
@@ -487,6 +486,7 @@ const Home: NextPage = () => {
                                 e.currentTarget.value
                               )
                             }
+                            placeholder="Secondary Text"
                           />
                         </div>
                         <ColorSwatchPicker
@@ -540,6 +540,10 @@ const Home: NextPage = () => {
                 onChangeModalSecondaryText={setModalSecondaryText}
                 modalButtonText={modalButtonText}
                 onChangeModalButtonText={setModalButtonText}
+                wheelSpeedScale={spinConfig.spinSpeed}
+                onChangeWheelSpeedScale={(num) => {
+                  setSpinConfig({ ...spinConfig, spinSpeed: num });
+                }}
               />
             </Tabs.Panel>
           </Tabs>
