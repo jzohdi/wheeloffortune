@@ -136,7 +136,7 @@ body{
 	height:500px; */
 	background-color: var(--wgg-blue-light);
 	border-radius:50%;
-	border:15px solid var(--wgg-blue-light);
+	/* border:15px solid var(--wgg-blue-light); */
 	position: relative;
 	overflow: hidden;
 	/* transition: transform 5s; */
@@ -147,7 +147,7 @@ body{
 	z-index: 1000;
 	width: 10vmin;
 	height: 10vmin;
-	background-color: #445136;
+	/* background-color: #445136; */
 	clip-path: polygon(0 0, 52% 100%, 100% 0);
 }
 
