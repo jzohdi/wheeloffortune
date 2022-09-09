@@ -14,13 +14,15 @@ import {
   Modal,
   Title,
 } from "@mantine/core";
-import useSize from "../hooks/useSize";
 import { MenuIcon, TrashCanBoldIcon } from "@jzohdi/jsx-icons";
 import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
 import useRAFLoop from "../hooks/useRAFLoop";
 import confetti from "canvas-confetti";
 import Head from "next/head";
+import { getSoundProvider } from "../features/soundProvider";
+
+const soundProvider = getSoundProvider();
 
 type AllElementsMap = { [id: string]: ModalElement };
 
@@ -142,6 +144,10 @@ const Home: NextPage = () => {
   const degreesToSpinRef = useRef<number>(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const activeEles = Object.values(modalData.elements).filter(
+    (ele) => ele.active
+  );
+
   const doConfetti = () => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -176,14 +182,23 @@ const Home: NextPage = () => {
         return;
       }
       let spinDelta =
-        spinConfig.spinSpeed * Math.max(Math.min(degreesLeft / 15, 20), 0.15);
+        spinConfig.spinSpeed * Math.max(Math.min(degreesLeft / 10, 10), 0.15);
+      // degreesLeft > 50
+      // ? // spinConfig.spinSpeed * Math.max(Math.min(degreesLeft / 15, 20), 0.15);
+      //   Math.max(Math.log2(degreesLeft), 0.15)
+      // : Math.max(Math.min(degreesLeft / 10, 20), 0.15);
       const currentDegree = currentRotation.current;
       const targetDegree = currentDegree + spinDelta;
       container.style.transform = "rotate(" + targetDegree + "deg)";
       degreesToSpinRef.current -= spinDelta;
       currentRotation.current += spinDelta;
+      const numberElements = activeEles.length;
       // TODO: make clicking sound when passing edge
-      // if ()
+      if (
+        didCrossBorder(currentDegree % 360, targetDegree % 360, numberElements)
+      ) {
+        soundProvider.playClick();
+      }
       // console.log("spinning");
       if (degreesToSpinRef.current <= 0) {
         setTimeout(() => {
@@ -192,7 +207,6 @@ const Home: NextPage = () => {
           const activeElements = Object.values(modalData.elements)
             .filter((e) => e.active)
             .sort(sortElements);
-          const numberElements = activeElements.length;
           const degreesPerEle = 360 / numberElements;
           const indexOfEnd = findIndexByEndDegree(endDegree, degreesPerEle);
           let prize = activeElements[0];
@@ -201,10 +215,11 @@ const Home: NextPage = () => {
           }
           setCurrPrize(prize);
           doConfetti();
+          soundProvider.playPrize();
         }, 300);
       }
     }
-  }, [spinConfig, modalData]);
+  }, [spinConfig, modalData, activeEles]);
 
   useRAFLoop(() => {
     const degreesLeft = degreesToSpinRef.current;
@@ -249,6 +264,15 @@ const Home: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    soundProvider.loadClickAudioELement().then((audioEle) => {
+      soundProvider.clickAudioElement = audioEle;
+    });
+    soundProvider.loadPrizeAudioElement().then((audioEle) => {
+      soundProvider.prizeAudioELement = audioEle;
+    });
+  }, []);
+
   // recalculate elements width and left whel modalData changes
   useEffect(() => {
     const activeElements = Object.values(modalData.elements).filter(
@@ -274,9 +298,6 @@ const Home: NextPage = () => {
     setModalData({ ...modalData });
   };
 
-  const activeEles = Object.values(modalData.elements).filter(
-    (ele) => ele.active
-  );
   const handleAddNewItem = () => {
     const text = newItem;
     const id = uuidv4();
@@ -492,6 +513,7 @@ const Home: NextPage = () => {
               alignItems: "center",
               position: "relative",
               backgroundColor: "#445136",
+              boxShadow: "0px 3px 14px 5px #0505054f",
             }}
           >
             <Image
@@ -765,4 +787,23 @@ function findIndexByEndDegree(
     currentDegree += degreesPerEle;
   }
   return index;
+}
+
+function didCrossBorder(
+  prevDegree: number,
+  currDegree: number,
+  numElements: number
+): boolean {
+  const degreesPerEle = 360 / numElements;
+  let currBorder = degreesPerEle / 2; // first border is at half the degrees of one ele;
+  for (let i = 0; i < numElements; i++) {
+    if (currBorder <= currDegree && currBorder >= prevDegree) {
+      return true;
+    }
+    currBorder += degreesPerEle;
+  }
+  if (currBorder <= currDegree && currBorder >= prevDegree) {
+    return true;
+  }
+  return false;
 }
