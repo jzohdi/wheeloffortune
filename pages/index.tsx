@@ -572,6 +572,14 @@ const Home: NextPage = () => {
                 onChangeWheelSpeedScale={(num) => {
                   setSpinConfig({ ...spinConfig, spinSpeed: num });
                 }}
+								minTurns={spinConfig.minTurns}
+								onChangeMinTurns={(num) => {
+									setSpinConfig({...spinConfig, minTurns: num})
+								}}
+								maxTurns={spinConfig.maxTurns}
+								onChangeMaxTurns={(num) => {
+									setSpinConfig({...spinConfig, maxTurns: num})
+								}}
               />
             </Tabs.Panel>
           </Tabs>

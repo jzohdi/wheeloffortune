@@ -16,6 +16,10 @@ interface GeneralSettingsPickerProps {
   onChangeModalButtonText: (val: string) => void;
   wheelSpeedScale: number;
   onChangeWheelSpeedScale: (num: number) => void;
+  minTurns: number;
+  onChangeMinTurns: (num: number) => void;
+  maxTurns: number;
+  onChangeMaxTurns: (num: number) => void;
 }
 
 const spacerHeight = 10;
@@ -35,6 +39,10 @@ export default function GeneralSettingsPicker({
   onChangeModalSecondaryText,
   wheelSpeedScale,
   onChangeWheelSpeedScale,
+  minTurns,
+  onChangeMaxTurns,
+  maxTurns,
+  onChangeMinTurns,
 }: GeneralSettingsPickerProps) {
   const handleChangeBackground = (file: File) => {
     // setInternalBackgroundImage(file);
@@ -113,6 +121,20 @@ export default function GeneralSettingsPicker({
         {...{ stepHoldDelay: 500, stepHoldInterval: 100 }}
         description="Larger value will stop wheel faster"
       />
+      <Spacer height={spacerHeight} />
+      <NumberInput
+        label="Min Turns"
+        description="The minimum number of revolutions that the wheel will turn on a spin"
+        value={minTurns}
+        onChange={onChangeMinTurns}
+      />
+      <Spacer height={spacerHeight} />
+      <NumberInput
+        label="Max Turns"
+        value={maxTurns}
+        onChange={onChangeMaxTurns}
+      />
+      <Spacer height={spacerHeight} />
     </div>
   );
 }
