@@ -1,5 +1,5 @@
 import { Router, useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface UseLocalUrlParams<T> {
   key: string;
@@ -12,23 +12,7 @@ export default function useLocalUrlState<T>({
 }: UseLocalUrlParams<T>): [T, (value: T) => void] {
   const [state, setState] = useState<T>(defaultValue);
   const router = useRouter();
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stringifiedData = JSON.stringify(state);
-      localStorage.setItem(key, stringifiedData);
-      const url = new URL(window.location.href);
-      url.searchParams.set(key, encodeURI(stringifiedData));
-      router.replace(
-        {
-          pathname: "/",
-          query: Object.fromEntries(url.searchParams.entries()),
-        },
-        undefined,
-        { shallow: true }
-      );
-    }
-  }, [state]);
+  const didLoadRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -44,13 +28,35 @@ export default function useLocalUrlState<T>({
     if (params[key] !== undefined && params[key] !== null) {
       paramParsedValue = params[key] as T;
     }
-    // console.log({ key, paramParsedValue, localStorageParsedValue });
+    if (key === "elements") {
+      console.log({ key, paramParsedValue, localStorageParsedValue });
+    }
     if (paramParsedValue !== null) {
       setState(paramParsedValue);
     } else if (localStorageParsedValue !== null) {
       return setState(localStorageParsedValue);
     }
-  }, []);
+  }, [key]);
+
+  useEffect(() => {
+    const didLoad = didLoadRef.current;
+    if (didLoad) {
+      const stringifiedData = JSON.stringify(state);
+      localStorage.setItem(key, stringifiedData);
+      const url = new URL(window.location.href);
+      url.searchParams.set(key, encodeURI(stringifiedData));
+      router.replace(
+        {
+          pathname: "/",
+          query: Object.fromEntries(url.searchParams.entries()),
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+    didLoadRef.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key, state]);
 
   const handleSetState = (value: T) => {
     setState(value);
