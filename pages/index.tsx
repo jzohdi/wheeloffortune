@@ -22,6 +22,7 @@ import WheelStylesPicker from "../features/components/WheelStylesPicker";
 import {
   DEFAFULT_MODAL_TITLE,
   DEFAULT_ELE_ROTATION,
+  DEFAULT_ELE_TEXT_POSITION,
   DEFAULT_FONT_SIZE,
   DEFAULT_MAX_TURNS,
   DEFAULT_MIN_TURNS,
@@ -56,6 +57,7 @@ import {
 } from "../utils";
 import { ColorSwatchPicker } from "../features/components/ColorSwatchPicker";
 import GeneralSettingsPicker from "../features/components/GeneralSettingsPicker";
+import useLocalUrlState from "../hooks/useLocalUrl";
 
 const soundProvider = getSoundProvider();
 
@@ -132,34 +134,55 @@ const defaultData: AllElementsMap = [
 }, {} as AllElementsMap);
 
 const Home: NextPage = () => {
-  const [spinConfig, setSpinConfig] = useState<WheelSpinConfig>({
-    minTurns: DEFAULT_MIN_TURNS,
-    maxTurns: DEFAULT_MAX_TURNS,
-    spinSpeed: 1,
+  const [spinConfig, setSpinConfig] = useLocalUrlState<WheelSpinConfig>({
+    key: "spin-config",
+    defaultValue: {
+      minTurns: DEFAULT_MIN_TURNS,
+      maxTurns: DEFAULT_MAX_TURNS,
+      spinSpeed: 1,
+    },
   });
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [modalData, setModalData] = useState<ModalData>({
-    elements: defaultData,
+  const [modalData, setModalData] = useLocalUrlState<ModalData>({
+    key: "elements",
+    defaultValue: {
+      elements: defaultData,
+    },
   });
   const [wheelConfig, setWheelConfig] = useState<WheelConfig>(
     getDefaultWheelConfig(modalData.elements)
   );
   const [currPrize, setCurrPrize] = useState<ModalElement | null>(null);
   /* =======  styles ======= */
-  const [fontSize, setFontSize] = useState<number>(DEFAULT_FONT_SIZE);
-  const [paddingTop, setPaddingTop] = useState<number>(DEFAULT_PADDING_TOP);
-  const [eleRotation, setEleRotation] = useState<number>(DEFAULT_ELE_ROTATION);
+  const [fontSize, setFontSize] = useLocalUrlState<number>({
+    key: "fontSize",
+    defaultValue: DEFAULT_FONT_SIZE,
+  });
+  const [paddingTop, setPaddingTop] = useLocalUrlState<number>({
+    key: "paddingTop",
+    defaultValue: DEFAULT_PADDING_TOP,
+  });
+  const [eleRotation, setEleRotation] = useLocalUrlState<number>({
+    key: "eleRotation",
+    defaultValue: DEFAULT_ELE_ROTATION,
+  });
   const [eleTextPosition, setEleTextPosition] =
-    useState<EleTextPosition>("top");
-  const [wheelBorderColor, setWheelBorderColor] = useState<string>(
-    DEFAULT_WHEEL_BORDER_COLOR
-  );
-  const [wheelBorderWidth, setWHeelBorderWidth] = useState<number>(
-    DEFAULT_WHEEL_BORDER_WIDTH
-  );
-  const [wheelArrowColor, setWheelArrowColor] = useState<string>(
-    DEFAULT_WHEEL_ARROW_COLOR
-  );
+    useLocalUrlState<EleTextPosition>({
+      key: "eleTextPosition",
+      defaultValue: DEFAULT_ELE_TEXT_POSITION,
+    });
+  const [wheelBorderColor, setWheelBorderColor] = useLocalUrlState<string>({
+    key: "borderColor",
+    defaultValue: DEFAULT_WHEEL_BORDER_COLOR,
+  });
+  const [wheelBorderWidth, setWHeelBorderWidth] = useLocalUrlState<number>({
+    key: "borderWidth",
+    defaultValue: DEFAULT_WHEEL_BORDER_WIDTH,
+  });
+  const [wheelArrowColor, setWheelArrowColor] = useLocalUrlState<string>({
+    key: "arrowColro",
+    defaultValue: DEFAULT_WHEEL_ARROW_COLOR,
+  });
   /* ========   general   ========*/
   const [backgroundSrc, setBackgroundSrc] = useState<string>("/homepage_3.png");
   const [prizeAudioSrc, setPrizeAudioSrc] = useState<string>(
@@ -167,13 +190,18 @@ const Home: NextPage = () => {
   );
   const [shouldPlayPrizeAudio, setShouldPlayPrizeAudio] =
     useState<boolean>(true);
-  const [modalTitle, setModalTitle] = useState<string>(DEFAFULT_MODAL_TITLE);
-  const [modalSecondaryText, setModalSecondaryText] = useState<string>(
-    DEFAULT_MODAL_SECONDARY
-  );
-  const [modalButtonText, setModalButtonText] = useState<string>(
-    DEFAULT_MODAL_BUTTON_TEXT
-  );
+  const [modalTitle, setModalTitle] = useLocalUrlState<string>({
+    key: "modaTitle",
+    defaultValue: DEFAFULT_MODAL_TITLE,
+  });
+  const [modalSecondaryText, setModalSecondaryText] = useLocalUrlState<string>({
+    key: "secondaryText",
+    defaultValue: DEFAULT_MODAL_SECONDARY,
+  });
+  const [modalButtonText, setModalButtonText] = useLocalUrlState<string>({
+    key: "buttonText",
+    defaultValue: DEFAULT_MODAL_BUTTON_TEXT,
+  });
   //////////////////
   const [newItem, setNewItem] = useState<string>("");
   // const { width, height, measureRef } = useSize();

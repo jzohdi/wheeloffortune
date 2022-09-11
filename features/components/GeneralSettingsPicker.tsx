@@ -1,5 +1,4 @@
 import { FileInput, NumberInput, Switch, TextInput } from "@mantine/core";
-import { useState } from "react";
 import Spacer from "./Spacer";
 
 interface GeneralSettingsPickerProps {
@@ -37,8 +36,6 @@ export default function GeneralSettingsPicker({
   wheelSpeedScale,
   onChangeWheelSpeedScale,
 }: GeneralSettingsPickerProps) {
-  // const [internalBackgroundImage, setInternalBackgroundImage] =
-  //   useState<File | null>(null);
   const handleChangeBackground = (file: File) => {
     // setInternalBackgroundImage(file);
     if (file) {
