@@ -8,6 +8,8 @@ interface GeneralSettingsPickerProps {
   onChangePrizeSound: (value: string) => void;
   shouldPlayPrizeAudio: boolean;
   onChangeShouldPlayPrize: (val: boolean) => void;
+  shouldPlayTickAudio: boolean;
+  onChangeTickSound: (val: boolean) => void;
   modalTitle: string;
   onChangeModalTitle: (val: string) => void;
   modalSecondaryText: string;
@@ -26,6 +28,8 @@ export default function GeneralSettingsPicker({
   audioSrc,
   onChangePrizeSound,
   shouldPlayPrizeAudio,
+  onChangeTickSound,
+  shouldPlayTickAudio,
   onChangeShouldPlayPrize,
   modalButtonText,
   onChangeModalButtonText,
@@ -83,6 +87,12 @@ export default function GeneralSettingsPicker({
         label="Play Prize Audio"
         checked={shouldPlayPrizeAudio}
         onChange={(e) => onChangeShouldPlayPrize(e.currentTarget.checked)}
+      />
+      <Spacer height={spacerHeight} />
+      <Switch
+        label="Play Ticking Audio"
+        checked={shouldPlayTickAudio}
+        onChange={(e) => onChangeTickSound(e.currentTarget.checked)}
       />
       <Spacer height={spacerHeight} />
       <TextInput

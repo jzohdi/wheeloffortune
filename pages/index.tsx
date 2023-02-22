@@ -189,7 +189,9 @@ const Home: NextPage = () => {
     soundProvider.prizeSrc
   );
   const [shouldPlayPrizeAudio, setShouldPlayPrizeAudio] =
-    useState<boolean>(true);
+    useState<boolean>(false);
+  const [shouldPlayTickAudio, setShouldPlayTickAudio] =
+    useState<boolean>(false);
   const [modalTitle, setModalTitle] = useLocalUrlState<string>({
     key: "modaTitle",
     defaultValue: DEFAFULT_MODAL_TITLE,
@@ -255,7 +257,9 @@ const Home: NextPage = () => {
       if (
         didCrossBorder(currentDegree % 360, targetDegree % 360, numberElements)
       ) {
-        soundProvider.playClick();
+        if (shouldPlayTickAudio) {
+          soundProvider.playClick();
+        }
         degreesToSpinRef.current -= 2;
       }
       container.style.transform = "rotate(" + targetDegree + "deg)";
@@ -395,7 +399,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>WeGoGreenR Fortune Wheel!</title>
+        <title>Wheel of Fortune | App</title>
       </Head>
       <canvas
         style={{
@@ -562,6 +566,8 @@ const Home: NextPage = () => {
                 onChangePrizeSound={setPrizeAudioSrc}
                 shouldPlayPrizeAudio={shouldPlayPrizeAudio}
                 onChangeShouldPlayPrize={setShouldPlayPrizeAudio}
+                shouldPlayTickAudio={shouldPlayTickAudio}
+                onChangeTickSound={setShouldPlayTickAudio}
                 modalTitle={modalTitle}
                 onChangeModalTitle={setModalTitle}
                 modalSecondaryText={modalSecondaryText}
