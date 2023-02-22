@@ -40,12 +40,12 @@ export default function CenterStartSpinButton({
           boxShadow: "0px 3px 14px 5px #0505054f",
         }}
       >
-        <Image
+        {/* <Image
           src="/greenr_logo.jpg"
           alt="WeGoGreenr Logo"
           layout="fill"
           priority
-        ></Image>
+        ></Image> */}
       </Button>
     </div>
   );
