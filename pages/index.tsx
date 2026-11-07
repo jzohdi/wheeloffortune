@@ -61,6 +61,16 @@ import useLocalUrlState from "../hooks/useLocalUrl";
 
 const soundProvider = getSoundProvider();
 
+// The wheel's <style jsx> block below takes some values straight from the URL query (and localStorage), so a crafted
+// link could add CSS rules or make the browser fetch other sites. Only numbers and colour-shaped strings get through.
+// Every value the app itself produces renders exactly as before: numbers are unchanged, an emptied number input
+// (undefined) still gives an invalid declaration, and hex, named and rgb()/hsl()-style colours (even half-typed) pass.
+const cssNumber = (value: unknown): number => Number(value);
+const CSS_COLOR =
+  /^\s*(#[0-9a-f]*|[a-z]+|(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|light-dark)\([0-9a-z.,%\s/+-]*\)?)\s*$/i;
+const cssColor = (value: unknown): string =>
+  typeof value === "string" && CSS_COLOR.test(value) ? value : "invalid";
+
 const defaultData: AllElementsMap = [
   {
     id: uuidv4(),
@@ -638,7 +648,7 @@ const Home: NextPage = () => {
             .wheel-container {
               width: 80vmin;
               height: 80vmin;
-              border: ${wheelBorderWidth}px solid ${wheelBorderColor};
+              border: ${cssNumber(wheelBorderWidth)}px solid ${cssColor(wheelBorderColor)};
             }
             .wheel-container div {
               position: absolute;
@@ -650,11 +660,11 @@ const Home: NextPage = () => {
               font-weight: bold;
               color: #fff;
               padding: 0px 15px;
-              font-size: ${fontSize}px;
+              font-size: ${cssNumber(fontSize)}px;
               align-items: ${eleTextPosition === "center"
                 ? "center"
                 : "flex-start"};
-              padding-top: ${paddingTop}px;
+              padding-top: ${cssNumber(paddingTop)}px;
               width: ${wheelConfig.eleWidth}%;
               left: ${wheelConfig.eleLeft}%;
             }

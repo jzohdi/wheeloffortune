@@ -1,4 +1,5 @@
-// Behavior smoke test for the wheel of fortune: checks B1–B11 and the security header baseline.
+// Behavior smoke test for the wheel of fortune: checks B1–B11, that crafted links can't inject CSS (A1) and the
+// security header baseline.
 // B11 (no page errors, and no 4xx/5xx responses or console errors from this site's origin) runs after
 // every test. Other origins don't count, so e.g. the Vercel toolbar on a preview can't trip it.
 // B7 (every setting is written into the URL query) is checked by B4–B6 after each change.
@@ -357,6 +358,28 @@ test("B8 a deep link with custom items and styles renders that wheel", async ({ 
   expect(w.border).toBe("8px solid rgb(255, 0, 255)");
   expect(w.arrowColor).toBe("rgb(0, 255, 0)");
   expect(urlValue(page, "elements")).toEqual({ elements });
+});
+
+test("A1 a crafted link can't inject CSS into the wheel's styles or make the page fetch other sites", async ({ page }) => {
+  // Only the probe's own host is watched, so e.g. the Vercel toolbar on a preview doesn't count. It never resolves.
+  const probeRequests: string[] = [];
+  await page.route("https://css-probe.invalid/**", (route) => {
+    probeRequests.push(route.request().url());
+    return route.abort();
+  });
+  const outlines = () =>
+    page.evaluate(() => [getComputedStyle(document.documentElement).outlineStyle, getComputedStyle(document.body).outlineStyle]);
+
+  // Breaking out of the rule, through the border colour and through a font size passed as a string.
+  await open(page, deepLink({ borderColor: "#bcc8d0;}body{outline:7px solid rgb(1, 2, 3)}.x{color:red" }));
+  expect(await outlines()).toEqual(["none", "none"]);
+  await open(page, deepLink({ fontSize: "16;}html{outline:5px solid rgb(1, 2, 3)}.x{color:red" }));
+  expect(await outlines()).toEqual(["none", "none"]);
+
+  // Adding a property inside the rule that fetches another site.
+  await open(page, deepLink({ borderColor: "red;background-image:url(https://css-probe.invalid/beacon.png)" }));
+  expect(await page.locator(".wheel-container").evaluate((el) => getComputedStyle(el).backgroundImage)).toBe("none");
+  expect(probeRequests).toEqual([]);
 });
 
 // Pre-existing bug: hooks/useLocalUrl.ts saves the default to localStorage before it reads the
