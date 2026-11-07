@@ -331,7 +331,6 @@ const Home: NextPage = () => {
       containerRef.current = node;
       // measureRef(node);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
