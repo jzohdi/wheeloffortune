@@ -446,6 +446,9 @@ const Home: NextPage = () => {
         overlayOpacity={1}
         overlayColor="none"
         position="right"
+        // Mantine 5.10 wraps the drawer's content in a body element. Give it the drawer's height so the
+        // ScrollArea's calc(100% - 43px) resolves as it did on 5.2, and the item list scrolls.
+        styles={{ body: { height: "100%" } }}
       >
         <ScrollArea
           style={{ width: "100%", height: "calc(100% - 43px)", padding: 10 }}

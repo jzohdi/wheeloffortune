@@ -179,12 +179,17 @@ test("B2 a spin ends on the prize the app's math picks, shown in the modal; Play
   await expect(spinButton(page)).toBeVisible();
 });
 
-test("B3 the menu button opens the drawer with Items, Styles and General; Escape and X close it", async ({ page }) => {
+test("B3 the menu button opens the drawer with Items, Styles and General, its list scrolls; Escape and X close it", async ({ page }) => {
   await open(page);
   await menuButton(page).click();
   await expect(drawer(page)).toBeVisible();
   await expect(drawer(page).getByRole("tab")).toHaveText(["Items", "Styles", "General"]);
   await expect(itemRows(page)).toHaveCount(11);
+  // The item list scrolls inside the drawer, so its last row can be brought fully into view.
+  const lastRow = itemRows(page).last();
+  await lastRow.scrollIntoViewIfNeeded();
+  const lastBox = await lastRow.boundingBox();
+  expect(lastBox && lastBox.y + lastBox.height).toBeLessThanOrEqual(page.viewportSize()!.height);
   await page.keyboard.press("Escape");
   await expect(drawer(page)).toBeHidden();
   await menuButton(page).click();
