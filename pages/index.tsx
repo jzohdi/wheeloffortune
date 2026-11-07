@@ -435,7 +435,7 @@ const Home: NextPage = () => {
       <Image
         src={`${backgroundSrc}`}
         alt="default background wgg"
-        layout="fill"
+        fill
         priority
       />
       <Drawer
