@@ -61,6 +61,16 @@ import useLocalUrlState from "../hooks/useLocalUrl";
 
 const soundProvider = getSoundProvider();
 
+// The wheel's <style jsx> block below takes some values straight from the URL query (and localStorage), so a crafted
+// link could add CSS rules or make the browser fetch other sites. Only numbers and colour-shaped strings get through.
+// Every value the app itself produces renders exactly as before: numbers are unchanged, an emptied number input
+// (undefined) still gives an invalid declaration, and hex, named and rgb()/hsl()-style colours (even half-typed) pass.
+const cssNumber = (value: unknown): number => Number(value);
+const CSS_COLOR =
+  /^\s*(#[0-9a-f]*|[a-z]+|(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|light-dark)\([0-9a-z.,%\s/+-]*\)?)\s*$/i;
+const cssColor = (value: unknown): string =>
+  typeof value === "string" && CSS_COLOR.test(value) ? value : "invalid";
+
 const defaultData: AllElementsMap = [
   {
     id: uuidv4(),
@@ -321,7 +331,6 @@ const Home: NextPage = () => {
       containerRef.current = node;
       // measureRef(node);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -435,7 +444,7 @@ const Home: NextPage = () => {
       <Image
         src={`${backgroundSrc}`}
         alt="default background wgg"
-        layout="fill"
+        fill
         priority
       />
       <Drawer
@@ -446,6 +455,9 @@ const Home: NextPage = () => {
         overlayOpacity={1}
         overlayColor="none"
         position="right"
+        // Mantine 5.10 wraps the drawer's content in a body element. Give it the drawer's height so the
+        // ScrollArea's calc(100% - 43px) resolves as it did on 5.2, and the item list scrolls.
+        styles={{ body: { height: "100%" } }}
       >
         <ScrollArea
           style={{ width: "100%", height: "calc(100% - 43px)", padding: 10 }}
@@ -635,7 +647,7 @@ const Home: NextPage = () => {
             .wheel-container {
               width: 80vmin;
               height: 80vmin;
-              border: ${wheelBorderWidth}px solid ${wheelBorderColor};
+              border: ${cssNumber(wheelBorderWidth)}px solid ${cssColor(wheelBorderColor)};
             }
             .wheel-container div {
               position: absolute;
@@ -647,11 +659,11 @@ const Home: NextPage = () => {
               font-weight: bold;
               color: #fff;
               padding: 0px 15px;
-              font-size: ${fontSize}px;
+              font-size: ${cssNumber(fontSize)}px;
               align-items: ${eleTextPosition === "center"
                 ? "center"
                 : "flex-start"};
-              padding-top: ${paddingTop}px;
+              padding-top: ${cssNumber(paddingTop)}px;
               width: ${wheelConfig.eleWidth}%;
               left: ${wheelConfig.eleLeft}%;
             }

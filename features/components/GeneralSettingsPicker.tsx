@@ -70,6 +70,8 @@ export default function GeneralSettingsPicker({
   return (
     <div style={{ padding: "10px 5px" }}>
       <FileInput
+        // @ts-expect-error -- Mantine 5's FileInput renders a placeholder, but its props type takes it from
+        // <button>'s attributes, which @types/react 18.3 no longer gives a placeholder.
         placeholder={backgroundSrc}
         accept="image/*"
         label="Background Image"
@@ -77,6 +79,8 @@ export default function GeneralSettingsPicker({
       />
       <Spacer height={spacerHeight} />
       <FileInput
+        // @ts-expect-error -- Mantine 5's FileInput renders a placeholder, but its props type takes it from
+        // <button>'s attributes, which @types/react 18.3 no longer gives a placeholder.
         placeholder={"/celebration"}
         accept="audio/*"
         label="Prize Sound"
