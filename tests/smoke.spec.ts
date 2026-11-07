@@ -77,10 +77,12 @@ async function waitForUrlToSettle(page: Page, quietMs = 700) {
   }
 }
 
-// Load a page and wait until the app has hydrated, which it shows by writing its state into the URL.
+// Load a page, wait until Next's router is ready (the page has hydrated and its effects have run), then wait for the
+// URL to settle. Which keys survive the 12 simultaneous router.replace calls on mount depends on router timing, and
+// the URL may even end up as it was loaded, so neither a given key nor a URL change is a reliable signal.
 async function open(page: Page, url = "/") {
   await page.goto(url);
-  await expect(page).toHaveURL(/[?&]elements=/);
+  await page.waitForFunction(() => (window as { next?: { router?: { isReady?: boolean } } }).next?.router?.isReady === true);
   await waitForUrlToSettle(page);
 }
 
